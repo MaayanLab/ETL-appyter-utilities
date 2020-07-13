@@ -86,7 +86,7 @@ def save_setlib(df, lib, path, name):
 
         w, h = arr.shape
         for i in tqdm(range(h)):
-            print(attributes[i], *df.index[arr[:, i]],
+            print(attributes[i], *df.index[arr[:, i] == 1],
                   sep='\t', end='\n', file=f)
 
 
