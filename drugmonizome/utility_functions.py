@@ -72,6 +72,8 @@ def save_setlib(df, lib, path, name):
     The year and month are added at the end of the name. The path the file is
     saved to is thus
         path + name + '_<year>_<month>.gmt'
+
+    All set sizes must be greater than five to be exported!
     '''
     filenameGMT = file_name(path, name, 'gmt')
 
@@ -86,8 +88,11 @@ def save_setlib(df, lib, path, name):
 
         w, h = arr.shape
         for i in tqdm(range(h)):
-            print(attributes[i], *df.index[arr[:, i] == 1],
-                  sep='\t', end='\n', file=f)
+            if len(set(binary_matrix.index[arr[:, i] == 1])) >= 5:
+                print(attributes[i], *df.index[arr[:, i] == 1],
+                    sep='\t', end='\n', file=f)
+            else:
+                pass
 
 
 def similarity_matrix(df, metric, dtype=None, sparse=False):
