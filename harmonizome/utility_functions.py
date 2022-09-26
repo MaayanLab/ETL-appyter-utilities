@@ -1,9 +1,13 @@
 # Adapted from code created by Moshe Silverstein and Charles Dai
 
 import datetime
+import json
 import os
 from tkinter import Y
+from typing import Dict
+from xml.dom.minicompat import NodeList
 import zipfile
+import math
 
 import numpy as np
 import pandas as pd
@@ -264,41 +268,6 @@ def edge_list(df):
     return df
 
 
-def turtle(df, geneid_lookup, pathwayid_lookup):
-    '''
-    Creates and returns a list of <gene, participates in, pathway> triples in 
-    Turtle syntax. Genes URIs are created using NCBI Entrez Gene IDs, and pathway 
-    URIs are created using Reactome IDs.
-    
-    '''
-    genepre = '<https://identifiers.org/ncbigene> .'
-    pipre = '<http://purl.obolibrary.org/obo/RO_0000056> .'
-    pathwaypre = '<https://identifiers.org/reactome> .'
-    gene = 'ncbigene'
-    pi = 'pi'
-    pathway = 'reactome'
-    
-    # matrix as input
-    filenameTTL = file_name('Output/Reactome', 'reactome_gene_attribute_rdf', 'ttl')
-    df = df.rename(geneid_lookup).sort_index().T
-    df = df.rename(pathwayid_lookup).sort_index()
-
-    with open(filenameTTL, 'w') as f:
-        
-        print('@prefix ' + gene + ': ' + genepre,  file=f)
-        print('@prefix ' + pi + ': ' + pipre,  file=f)
-        print('@prefix ' + pathway + ': ' + pathwaypre,  file=f)
-        print(file=f)
-        
-        arr = df.reset_index(drop=True).to_numpy(dtype=np.int_)
-        attributes = df.columns
-        
-        w, h = arr.shape
-        for i in tqdm(range(h)):
-            print(gene + ':' + str(attributes[i])+ ' ' + pi, end=' pathway:', file=f)
-            print(*df.index[arr[:, i] == 1], sep=', pathway:', end=' .\n', file=f)
-
-
 def file_name(path, name, ext):
     '''
     Returns the file name by taking the path and name, adding the year and month
@@ -377,8 +346,8 @@ def load_data(filename):
             return df
 
 
-def archive(path):
-    with zipfile.ZipFile('output_archive.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+def archive(output_name, path):
+    with zipfile.ZipFile(output_name+'_output_archive.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(path):
             for f in files:
                 zipf.write(os.path.join(root, f))
