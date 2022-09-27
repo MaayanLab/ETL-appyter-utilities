@@ -341,8 +341,8 @@ def load_data(filename):
             return df
 
 
-def archive(path, output_name=None):
-    with zipfile.ZipFile(output_name+'_output_archive.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+def archive(path, output_name=''):
+    with zipfile.ZipFile(output_name+'output_archive.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(path):
             for f in files:
                 zipf.write(os.path.join(root, f))
