@@ -1,10 +1,7 @@
 # Adapted from code created by Moshe Silverstein and Charles Dai
 
 import datetime
-import json
 import os
-from tkinter import Y
-from typing import Dict
 import zipfile
 
 import numpy as np
@@ -344,7 +341,7 @@ def load_data(filename):
             return df
 
 
-def archive(output_name, path):
+def archive(path, output_name=None):
     with zipfile.ZipFile(output_name+'_output_archive.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(path):
             for f in files:
