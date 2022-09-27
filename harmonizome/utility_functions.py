@@ -1,4 +1,4 @@
-# Adapted from code created by Moshe Silverstein
+# Adapted from code created by Moshe Silverstein and Charles Dai
 
 import datetime
 import os
@@ -9,7 +9,6 @@ import pandas as pd
 import scipy.spatial.distance as dist
 import scipy.sparse as sp
 from statsmodels.distributions.empirical_distribution import ECDF
-
 from tqdm import tqdm
 
 
@@ -196,8 +195,7 @@ def gene_list(df, geneid_lookup):
     gene_ids = np.array([geneid_lookup.get(x, -1)
                          if np.isfinite(geneid_lookup.get(x, -1))
                          else -1 for x in tqdm(df.index)], dtype=np.int_)
-    df = pd.DataFrame(gene_ids, index=df.index,
-                      columns=['Gene ID'])
+    df = pd.DataFrame(gene_ids, index=df.index, columns=['Gene ID'])
     return df
 
 
@@ -261,7 +259,7 @@ def edge_list(df):
     count = np.sum(np.sum(df >= 0.95) + np.sum(df <= -0.95))
     df = df.stack()
     df.name = 'Weight'
-    print('The number of statisticaly relevent gene-attribute associations is: %d' % count)
+    print('The number of statisticaly relevant gene-attribute associations is: %d' % count)
     return df
 
 
@@ -343,8 +341,8 @@ def load_data(filename):
             return df
 
 
-def archive(path):
-    with zipfile.ZipFile('output_archive.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+def archive(path, output_name=''):
+    with zipfile.ZipFile(output_name+'output_archive.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, _, files in os.walk(path):
             for f in files:
                 zipf.write(os.path.join(root, f))
