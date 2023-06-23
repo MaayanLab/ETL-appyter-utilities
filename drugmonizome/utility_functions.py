@@ -103,7 +103,7 @@ def similarity_matrix(df, metric, dtype=None, sparse=False):
     '''
     if sparse and metric == 'jaccard':
         # from na-o-ys on Github
-        sparse = sp.csr_matrix(df.to_numpy(dtype=np.bool).astype(np.int))
+        sparse = sp.csr_matrix(df.to_numpy(dtype=bool).astype(np.int))
         cols_sum = sparse.getnnz(axis=1)
         ab = sparse * sparse.T
         denom = np.repeat(cols_sum, ab.getnnz(axis=1)) + \
