@@ -145,7 +145,7 @@ def save_setlib(df, lib, direction, path, name):
         df = df.T
 
     with open(filenameGMT, 'w') as f:
-        arr = df.reset_index(drop=True).to_numpy(dtype=np.int_)
+        arr = df.reset_index(drop=True).to_numpy(dtype=int)
         attributes = df.columns
 
         w, h = arr.shape
@@ -162,7 +162,7 @@ def similarity_matrix(df, metric, dtype=None, sparse=False):
     '''
     if sparse and metric == 'jaccard':
         # from na-o-ys on Github
-        sparse = sp.csr_matrix(df.to_numpy(dtype=bool).astype(np.int))
+        sparse = sp.csr_matrix(df.to_numpy(dtype=bool).astype(int))
         cols_sum = sparse.getnnz(axis=1)
         ab = sparse * sparse.T
         denom = np.repeat(cols_sum, ab.getnnz(axis=1)) + \
@@ -194,7 +194,7 @@ def gene_list(df, geneid_lookup):
     '''
     gene_ids = np.array([geneid_lookup.get(x, -1)
                          if np.isfinite(geneid_lookup.get(x, -1))
-                         else -1 for x in tqdm(df.index)], dtype=np.int_)
+                         else -1 for x in tqdm(df.index)], dtype=int)
     df = pd.DataFrame(gene_ids, index=df.index, columns=['Gene ID'])
     return df
 
