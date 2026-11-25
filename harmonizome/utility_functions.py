@@ -56,15 +56,17 @@ def zscore(df, epsilon=0):
         epsilon - small adjustment in the case of divide by 0 errors.
     '''
     np.seterr(divide='ignore', invalid='ignore')
-    median_y = np.median(df, axis=1)[:, np.newaxis]
-    abs_dev = np.abs(df - median_y)
+    # operate on a numpy array, newer pandas no longer supports multi-dimensional indexing of Series
+    values = np.asarray(df, dtype=float)
+    median_y = np.median(values, axis=1)[:, np.newaxis]
+    abs_dev = np.abs(values - median_y)
     median_dev = np.median(abs_dev, axis=1)
     mean_dev = np.mean(abs_dev, axis=1)
     median_abs_dev = np.broadcast_to(median_dev[:, np.newaxis], df.shape)
     mean_abs_dev = np.broadcast_to(mean_dev[:, np.newaxis], df.shape)
     modified_z_scores = np.where(median_abs_dev != 0,
-                                 0.6745 * (df - median_y) / median_abs_dev,
-                                 (df - median_y) / (1.253314 * mean_abs_dev + epsilon))
+                                 0.6745 * (values - median_y) / median_abs_dev,
+                                 (values - median_y) / (1.253314 * mean_abs_dev + epsilon))
 
     return pd.DataFrame(data=modified_z_scores, index=df.index,
                         columns=df.columns)
