@@ -31,9 +31,9 @@ def merge(df, axis):
     final values of the merged rows or columns is determined by the method.
     '''
     if axis == 'column':
-        return df.groupby(df.columns, axis=1).mean()
+        return df.T.groupby(level=0).mean().T
     elif axis == 'row':
-        return df.groupby(level=0, axis=0).mean()
+        return df.groupby(level=0).mean()
 
 
 def quantile_normalize(df):
@@ -87,7 +87,9 @@ def map_symbols(df, symbol_lookup, remove_duplicates=False):
     tqdm.pandas()
     df = df.reset_index()
 
-    df.iloc[:, 0] = df.iloc[:, 0].progress_map(
+    # replace the column rather than assign into it, the mapped values (NaN for
+    #  unmapped entries) may not fit the original dtype (e.g. pandas>=3 str)
+    df[df.columns[0]] = df.iloc[:, 0].progress_map(
         lambda x: symbol_lookup.get(x, np.nan))
 
     df = df.dropna(subset=[df.columns[0]])
@@ -122,7 +124,7 @@ def ternary_matrix(df):
         else:
             return 0
 
-    return df.applymap(mapter)
+    return df.map(mapter) if hasattr(df, 'map') else df.applymap(mapter)
 
 
 def save_setlib(df, lib, direction, path, name):
